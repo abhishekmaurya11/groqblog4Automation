@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoBlogger Pro - Light Edition</title>
+    <title>AutoBlogger Pro - Light Edition (Fixed Model)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <!-- Google API Client for Blogger -->
@@ -20,7 +20,7 @@
             --primary-light: #fff0ed;
             --secondary: #64748b;
             --bg-sidebar: #ffffff;
-            --bg-body: #f8fafc; /* Light Gray Background */
+            --bg-body: #f8fafc; 
             --bg-card: #ffffff;
             --text-main: #0f172a;
             --text-light: #64748b;
@@ -35,7 +35,6 @@
         * { box-sizing: border-box; outline: none; }
         body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Layout */
         .sidebar {
             width: 260px; background: var(--bg-sidebar); color: var(--text-main); display: flex; flex-direction: column; flex-shrink: 0;
             border-right: 1px solid var(--border);
@@ -50,11 +49,9 @@
         
         .main-content { flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 2rem; background: var(--bg-body); }
         
-        /* Views */
         .view-section { display: none; animation: fadeIn 0.3s ease; }
         .view-section.active { display: block; }
         
-        /* Components */
         .card { background: var(--bg-card); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 1.5rem; }
         .card-header { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; color: var(--text-main); }
         
@@ -65,7 +62,6 @@
         .stat-number { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
         .stat-label { color: var(--text-light); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
 
-        /* Forms */
         .form-group { margin-bottom: 1rem; }
         label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; color: var(--text-main); }
         input, select, textarea {
@@ -85,19 +81,16 @@
         .btn-secondary { background: var(--secondary); color: white; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        /* Editor */
         .editor-toolbar { border: 1px solid var(--border); border-bottom: none; padding: 0.5rem; border-radius: var(--radius) var(--radius) 0 0; background: #f8fafc; display: flex; gap: 5px; }
         .editor-btn { background: none; border: none; padding: 5px 10px; cursor: pointer; color: var(--text-light); border-radius: 4px; }
         .editor-btn:hover { background: #e2e8f0; color: var(--text-main); }
         #postEditor { border-radius: 0 0 var(--radius) var(--radius); min-height: 300px; border: 1px solid var(--border); padding: 1rem; background: white; }
 
-        /* Tables */
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--border); }
         th { color: var(--text-light); font-size: 0.85rem; text-transform: uppercase; background: #f8fafc; }
         tr:hover td { background: #f8fafc; }
 
-        /* Logs (Light Theme) */
         .terminal {
             background: #f1f5f9; color: #334155; font-family: 'Fira Code', monospace;
             padding: 1rem; border-radius: var(--radius); height: 200px; overflow-y: auto;
@@ -107,7 +100,6 @@
         .log-success { color: #059669; font-weight: 600; }
         .log-error { color: #dc2626; font-weight: 600; }
 
-        /* Toggle Switch */
         .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
@@ -115,7 +107,6 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        /* Utilities */
         .hidden { display: none !important; }
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
         .badge-pub { background: #dcfce7; color: #166534; }
@@ -123,7 +114,6 @@
         .badge-err { background: #fee2e2; color: #991b1b; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* SETUP MODAL STYLES */
         .setup-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.95);
@@ -148,39 +138,32 @@
 </head>
 <body>
 
-    <!-- SETUP OVERLAY -->
     <div id="setupModal" class="setup-overlay">
         <div class="setup-card">
             <h1><i class="fa-solid fa-wrench"></i> Setup Required</h1>
             <p>Configure your API keys to start.</p>
-            
             <div class="form-group" style="text-align: left;">
                 <label style="color: var(--text-main);">Google Client ID</label>
-                <input type="text" id="setupClientId" placeholder="Client ID from Google Cloud Console">
+                <input type="text" id="setupClientId">
             </div>
-            
             <div class="form-group" style="text-align: left;">
                 <label style="color: var(--text-main);">Blogger Blog ID</label>
-                <input type="text" id="setupBlogId" placeholder="Found in Blogger URL settings">
+                <input type="text" id="setupBlogId">
             </div>
-
             <div class="form-group" style="text-align: left;">
                 <label style="color: var(--text-main);">Groq API Key</label>
                 <input type="password" id="setupGroqKey">
             </div>
-
             <div class="form-group" style="text-align: left;">
                 <label style="color: var(--text-main);">Pexels API Key (Optional)</label>
                 <input type="password" id="setupPexelsKey">
             </div>
-
             <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="finishSetup()">
                 Start Automation
             </button>
         </div>
     </div>
 
-    <!-- Sidebar -->
     <nav class="sidebar">
         <div class="brand">
             <i class="fa-solid fa-bolt" style="color: var(--primary);"></i> GroqBlogger
@@ -213,10 +196,8 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-content">
-        
-        <!-- Dashboard View -->
+        <!-- Dashboard -->
         <div id="dashboard" class="view-section active">
             <h1 style="margin-top:0;">Overview</h1>
             <div class="grid-3">
@@ -233,18 +214,15 @@
                     <div class="stat-label">System Status</div>
                 </div>
             </div>
-            
             <div class="card">
-                <div class="card-header">
-                    <span>Recent Activity</span>
-                </div>
+                <div class="card-header"><span>Recent Activity</span></div>
                 <div class="terminal" id="dashboardLog">
                     <div><span class="log-time">System:</span> Ready.</div>
                 </div>
             </div>
         </div>
 
-        <!-- Editor View -->
+        <!-- Editor -->
         <div id="editor" class="view-section">
             <h1 style="margin-top:0;">Content Generator</h1>
             <div class="grid-2">
@@ -275,7 +253,7 @@
                     </div>
                     <div class="form-group">
                         <label>Auto-Tags (Comma separated)</label>
-                        <input type="text" id="singleTags" placeholder="e.g. tech, ai, future (Leave empty for auto-gen)">
+                        <input type="text" id="singleTags" placeholder="e.g. tech, ai, future">
                     </div>
                     <div style="display:flex; gap: 10px;">
                         <button class="btn btn-primary" style="flex:1" onclick="generateContent('single')">
@@ -286,7 +264,6 @@
                         </button>
                     </div>
                 </div>
-                
                 <div class="card">
                     <div class="card-header">
                         <span>Post Preview</span>
@@ -323,7 +300,7 @@
             </div>
         </div>
 
-        <!-- Queue View -->
+        <!-- Queue -->
         <div id="queue" class="view-section">
             <h1 style="margin-top:0;">Queue Management</h1>
             <div class="grid-2">
@@ -348,7 +325,6 @@
                         <i class="fa-solid fa-file-import"></i> Add to Queue
                     </button>
                 </div>
-                
                 <div class="card" style="display:flex; flex-direction:column;">
                     <div class="card-header">
                         <span>Current Queue</span>
@@ -366,7 +342,7 @@
             </div>
         </div>
 
-        <!-- Automation View -->
+        <!-- Automation -->
         <div id="automation" class="view-section">
             <h1 style="margin-top:0;">Super Loop Automation</h1>
             <div class="card">
@@ -394,7 +370,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
                     <button id="startBatchBtn" class="btn btn-success" onclick="startAutomation()">
                         <i class="fa-solid fa-play"></i> Start Auto-Pilot Loop
@@ -403,7 +378,6 @@
                         <i class="fa-solid fa-stop"></i> Stop Processing
                     </button>
                 </div>
-
                 <div class="form-group" style="margin-top: 1.5rem;">
                     <label>Process Log</label>
                     <div class="terminal" id="automationLog">
@@ -413,7 +387,7 @@
             </div>
         </div>
 
-        <!-- History View -->
+        <!-- History -->
         <div id="history" class="view-section">
             <h1 style="margin-top:0;">Publishing History</h1>
             <div class="card">
@@ -426,50 +400,47 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Populated via JS -->
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
             <button class="btn btn-secondary" onclick="clearHistory()">Clear History</button>
         </div>
 
-        <!-- Settings View -->
+        <!-- Settings -->
         <div id="settings" class="view-section">
             <h1 style="margin-top:0;">Configuration</h1>
             <div class="card">
                 <div class="card-header">Blogger API</div>
                 <div class="form-group">
                     <label>Blog ID</label>
-                    <input type="text" id="cfgBlogId" placeholder="e.g. 123456789">
+                    <input type="text" id="cfgBlogId">
                 </div>
                 <div class="form-group">
                     <label>Google Client ID (OAuth)</label>
-                    <input type="text" id="cfgClientId" placeholder=".apps.googleusercontent.com">
+                    <input type="text" id="cfgClientId">
                 </div>
             </div>
-            
             <div class="card">
                 <div class="card-header">AI & Media APIs</div>
                 <div class="form-group">
                     <label>Groq API Key</label>
-                    <input type="password" id="cfgGroqKey" placeholder="gsk_...">
+                    <input type="password" id="cfgGroqKey">
                 </div>
                 <div class="form-group">
                     <label>Pexels API Key (Images)</label>
-                    <input type="password" id="cfgPexelsKey" placeholder="5678...">
+                    <input type="password" id="cfgPexelsKey">
                 </div>
                 <div class="form-group">
                     <label>Default Groq Model</label>
+                    <!-- UPDATED MODELS HERE -->
                     <select id="cfgModel">
-                        <option value="llama3-70b-8192">Llama 3 70B (Recommended)</option>
-                        <option value="llama3-8b-8192">Llama 3 8B (Fast)</option>
+                        <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile (Recommended)</option>
+                        <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (Fast)</option>
                         <option value="mixtral-8x7b-32768">Mixtral 8x7b</option>
-                        <option value="gemma-7b-it">Gemma 7B</option>
+                        <option value="gemma2-9b-it">Gemma 2 9B</option>
                     </select>
                 </div>
             </div>
-            
             <button class="btn btn-primary" onclick="saveSettings()">
                 <i class="fa-solid fa-save"></i> Save All Configuration
             </button>
@@ -479,17 +450,16 @@
 
     <!-- JS Logic -->
     <script>
-        // --- CONFIGURATION UPDATED WITH YOUR CLIENT ID ---
+        // --- CONFIGURATION ---
         const DEFAULT_CONFIG = {
-            // UPDATED Client ID
             clientid: "699259843998-qg5t2emtfubf2gpj7hbfrdgbi3lqocl5.apps.googleusercontent.com", 
             blogid: "27642592627975591",
             groqkey: "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",
             pexelskey: "zktXZfZyxDvRiAHbfd2fTR0cioV6pRyNSLRacwfUU13gWVXl7ZVI73kB",
-            model: "llama3-70b-8192"
+            // FIXED MODEL ID
+            model: "llama-3.1-70b-versatile"
         };
 
-        // --- State Management ---
         const APP = {
             config: {},
             queue: [],
@@ -499,7 +469,6 @@
             auth: false
         };
 
-        // --- Initialization ---
         window.addEventListener('load', () => {
             const saved = localStorage.getItem('autoBloggerProConfig');
             if (!saved) {
@@ -507,24 +476,38 @@
                 APP.config = DEFAULT_CONFIG;
             } else {
                 APP.config = JSON.parse(saved);
-                // Ensure the new ID is used even if old settings exist
+                // Force update to new model if old one exists
+                if(APP.config.model === "llama3-70b-8192") {
+                    APP.config.model = "llama-3.1-70b-versatile";
+                    localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
+                }
                 if(!APP.config.groqkey) APP.config.groqkey = DEFAULT_CONFIG.groqkey;
                 if(!APP.config.clientid || APP.config.clientid !== DEFAULT_CONFIG.clientid) {
                     APP.config.clientid = DEFAULT_CONFIG.clientid;
                 }
             }
 
-            // Populate all Input Fields
-            document.getElementById('setupClientId').value = APP.config.clientid || "";
-            document.getElementById('setupBlogId').value = APP.config.blogid || "";
-            document.getElementById('setupGroqKey').value = APP.config.groqkey || "";
-            document.getElementById('setupPexelsKey').value = APP.config.pexelskey || "";
+            // Populate Inputs
+            ['setupClientId','setupBlogId','setupGroqKey','setupPexelsKey',
+             'cfgBlogId','cfgClientId','cfgGroqKey','cfgPexelsKey'].forEach(id => {
+                 const key = id.replace('cfg','').replace('setup','').toLowerCase();
+                 // simple mapping fix for IDs
+                 let val = "";
+                 if(id.includes('setup')) {
+                     if(id === 'setupClientId') val = APP.config.clientid || "";
+                     if(id === 'setupBlogId') val = APP.config.blogid || "";
+                     if(id === 'setupGroqKey') val = APP.config.groqkey || "";
+                     if(id === 'setupPexelsKey') val = APP.config.pexelskey || "";
+                 } else {
+                     if(id === 'cfgClientId') val = APP.config.clientid || "";
+                     if(id === 'cfgBlogId') val = APP.config.blogid || "";
+                     if(id === 'cfgGroqKey') val = APP.config.groqkey || "";
+                     if(id === 'cfgPexelsKey') val = APP.config.pexelskey || "";
+                 }
+                 document.getElementById(id).value = val;
+             });
 
-            document.getElementById('cfgBlogId').value = APP.config.blogid || "";
-            document.getElementById('cfgClientId').value = APP.config.clientid || "";
-            document.getElementById('cfgGroqKey').value = APP.config.groqkey || "";
-            document.getElementById('cfgPexelsKey').value = APP.config.pexelskey || "";
-            document.getElementById('cfgModel').value = APP.config.model || "llama3-70b-8192";
+             document.getElementById('cfgModel').value = APP.config.model || "llama-3.1-70b-versatile";
 
             initAuth();
             loadHistory();
@@ -540,27 +523,17 @@
         });
 
         function checkSetup() {
-            if (!APP.config.clientid) {
-                document.getElementById('setupModal').style.display = 'flex';
-            }
+            if (!APP.config.clientid) document.getElementById('setupModal').style.display = 'flex';
         }
 
         window.finishSetup = () => {
-            const clientId = document.getElementById('setupClientId').value;
-            const blogId = document.getElementById('setupBlogId').value;
-            const groqKey = document.getElementById('setupGroqKey').value;
-            const pexelsKey = document.getElementById('setupPexelsKey').value;
-
-            if(!clientId) return alert("Google Client ID is required.");
-
-            APP.config = {
-                clientid: clientId,
-                blogid: blogId,
-                groqkey: groqKey,
-                pexelskey: pexelsKey,
-                model: 'llama3-70b-8192'
-            };
-
+            APP.config.clientid = document.getElementById('setupClientId').value;
+            APP.config.blogid = document.getElementById('setupBlogId').value;
+            APP.config.groqkey = document.getElementById('setupGroqKey').value;
+            APP.config.pexelskey = document.getElementById('setupPexelsKey').value;
+            APP.config.model = "llama-3.1-70b-versatile";
+            
+            if(!APP.config.clientid) return alert("Google Client ID is required.");
             localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
             document.getElementById('setupModal').style.display = 'none';
             log("Configuration Saved.", "success");
@@ -569,7 +542,6 @@
         window.switchView = (viewId) => {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(viewId).classList.add('active');
             event.currentTarget.classList.add('active');
         };
@@ -585,7 +557,6 @@
         window.handleAuth = () => {
             const clientId = APP.config.clientid;
             if (!clientId) return alert('Please set Client ID first.');
-            
             const tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: clientId,
                 scope: 'https://www.googleapis.com/auth/blogger',
@@ -593,7 +564,7 @@
                     if (resp.access_token) {
                         APP.auth = true;
                         document.getElementById('authBtn').innerHTML = '<i class="fa-solid fa-check"></i> Connected';
-                        document.getElementById('authBtn').style.background = '#10b981'; // Green
+                        document.getElementById('authBtn').style.background = '#10b981';
                         document.getElementById('connectionStatus').innerText = 'Authenticated';
                         log('Connected to Blogger', 'success');
                     }
@@ -626,7 +597,7 @@
                             { role: "system", content: "You are an expert blog content writer. You output valid JSON only." },
                             { role: "user", content: prompt }
                         ],
-                        model: APP.config.model || "llama3-70b-8192",
+                        model: APP.config.model || "llama-3.1-70b-versatile",
                         temperature: 0.7,
                         response_format: { type: "json_object" }
                     })
@@ -640,7 +611,6 @@
                 const data = await response.json();
                 const text = data.choices[0].message.content;
                 return JSON.parse(text);
-
             } catch (error) {
                 console.error("Groq Error:", error);
                 throw error;
@@ -653,30 +623,23 @@
                 headers: { Authorization: APP.config.pexelskey }
             });
             const data = await res.json();
-            if (data.photos && data.photos.length > 0) {
-                return data.photos[0].src.large;
-            }
+            if (data.photos && data.photos.length > 0) return data.photos[0].src.large;
             throw new Error("No images found");
         }
 
         window.generateContent = async (mode) => {
             const topic = document.getElementById('singleTopic').value;
             if (!topic) return log("Please enter a topic", "error");
-
             const template = document.getElementById('singleTemplate').value;
             const tone = document.getElementById('singleTone').value;
-
             try {
-                log(`Generating content for "${topic}" via Groq...`, 'info');
+                log(`Generating content for "${topic}"...`, 'info');
                 const data = await generateAI(topic, template, tone);
-                
                 document.getElementById('postTitle').value = data.title;
                 document.getElementById('postEditor').value = data.body;
                 document.getElementById('postMeta').value = data.meta;
-                
                 if (!document.getElementById('singleTags').value) {
-                    const tags = topic.split(' ').slice(0, 3).join(', ');
-                    document.getElementById('singleTags').value = tags;
+                    document.getElementById('singleTags').value = topic.split(' ').slice(0, 3).join(', ');
                 }
                 log("Content generated successfully", "success");
             } catch (e) {
@@ -693,27 +656,20 @@
                 const editor = document.getElementById('postEditor');
                 editor.value = imgTag + "\n" + editor.value;
                 log("Image inserted", "success");
-            } catch (e) {
-                log(e.message, "error");
-            }
+            } catch (e) { log(e.message, "error"); }
         };
 
         window.toggleVisual = () => {
             const p = document.getElementById('visualPreview');
             const e = document.getElementById('postEditor');
             if (p.style.display === 'none') {
-                p.style.display = 'block';
-                e.style.display = 'none';
+                p.style.display = 'block'; e.style.display = 'none';
                 p.innerHTML = document.getElementById('postTitle').value ? `<h1>${document.getElementById('postTitle').value}</h1>` : '' + document.getElementById('postEditor').value;
             } else {
-                p.style.display = 'none';
-                e.style.display = 'block';
+                p.style.display = 'none'; e.style.display = 'block';
             }
         };
-        
-        window.formatDoc = (cmd, value) => {
-            document.execCommand(cmd, false, value);
-        }
+        window.formatDoc = (cmd, value) => document.execCommand(cmd, false, value);
 
         async function publishToBlogger(title, body, tags, isDraft) {
             if (!APP.auth) throw new Error("Not authenticated");
@@ -729,16 +685,12 @@
             const isDraft = document.getElementById('isDraft').checked; 
 
             if (!title || !body) return log("Missing title or body", "error");
-
             try {
                 log("Publishing...", "info");
                 const requestObj = { 'blogId': APP.config.blogid, 'resource': { 'title': title, 'content': body, 'labels': tags ? tags.split(',') : [] } };
-                let response;
                 const insertRes = await gapi.client.blogger.posts.insert(requestObj);
                 const postId = insertRes.result.id;
-                if (!isDraft) {
-                    await gapi.client.blogger.posts.publish({ blogId: APP.config.blogid, postId: postId });
-                }
+                if (!isDraft) await gapi.client.blogger.posts.publish({ blogId: APP.config.blogid, postId: postId });
                 const status = isDraft ? "Draft" : "Published";
                 log(`Post ${status} successfully!`, "success");
                 addToHistory(title, status, new Date());
@@ -746,9 +698,7 @@
                     document.getElementById('postTitle').value = "";
                     document.getElementById('postEditor').value = "";
                 }
-            } catch (e) {
-                log("Publish failed: " + e.message, "error");
-            }
+            } catch (e) { log("Publish failed: " + e.message, "error"); }
         };
 
         window.processImport = () => {

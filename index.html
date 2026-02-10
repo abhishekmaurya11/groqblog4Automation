@@ -15,13 +15,13 @@
 
     <style>
         :root {
-            --primary: #f55036; /* Groq Orange tone */
+            --primary: #f55036; /* Groq Orange */
             --primary-dark: #d43d25;
-            --primary-light: #fff0ed; /* Light orange for backgrounds */
+            --primary-light: #fff0ed;
             --secondary: #64748b;
-            --bg-dark: #ffffff; /* CHANGED TO WHITE */
+            --bg-sidebar: #ffffff;
+            --bg-body: #f8fafc; /* Light Gray Background */
             --bg-card: #ffffff;
-            --bg-body: #f8fafc; /* Very light gray for main area */
             --text-main: #0f172a;
             --text-light: #64748b;
             --border: #e2e8f0;
@@ -37,7 +37,7 @@
         
         /* Layout */
         .sidebar {
-            width: 260px; background: var(--bg-dark); color: var(--text-main); display: flex; flex-direction: column; flex-shrink: 0;
+            width: 260px; background: var(--bg-sidebar); color: var(--text-main); display: flex; flex-direction: column; flex-shrink: 0;
             border-right: 1px solid var(--border);
         }
         .brand { padding: 1.5rem; font-size: 1.25rem; font-weight: 800; color: var(--text-main); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
@@ -479,9 +479,10 @@
 
     <!-- JS Logic -->
     <script>
-        // --- HARDCODED USER CONFIGURATION ---
+        // --- CONFIGURATION UPDATED WITH YOUR CLIENT ID ---
         const DEFAULT_CONFIG = {
-            clientid: "699259843998-qg5t2emtfubf2gpj7hbfrdgbi3lqocl5.apps.googleusercontent.com", // Updated ID
+            // UPDATED Client ID
+            clientid: "699259843998-qg5t2emtfubf2gpj7hbfrdgbi3lqocl5.apps.googleusercontent.com", 
             blogid: "27642592627975591",
             groqkey: "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",
             pexelskey: "zktXZfZyxDvRiAHbfd2fTR0cioV6pRyNSLRacwfUU13gWVXl7ZVI73kB",
@@ -506,8 +507,11 @@
                 APP.config = DEFAULT_CONFIG;
             } else {
                 APP.config = JSON.parse(saved);
+                // Ensure the new ID is used even if old settings exist
                 if(!APP.config.groqkey) APP.config.groqkey = DEFAULT_CONFIG.groqkey;
-                if(!APP.config.clientid) APP.config.clientid = DEFAULT_CONFIG.clientid; // Ensure new ID is used
+                if(!APP.config.clientid || APP.config.clientid !== DEFAULT_CONFIG.clientid) {
+                    APP.config.clientid = DEFAULT_CONFIG.clientid;
+                }
             }
 
             // Populate all Input Fields

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoBlogger Pro - Stable Model Edition</title>
+    <title>AutoBlogger Pro - Stable Mixtral Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <!-- Google API Client for Blogger -->
@@ -432,12 +432,10 @@
                 </div>
                 <div class="form-group">
                     <label>Default Groq Model</label>
-                    <!-- UPDATED STABLE MODELS -->
+                    <!-- STABLE MODELS ONLY -->
                     <select id="cfgModel">
-                        <option value="llama3-groq-70b-8192-tool-use-preview">Llama 3 70B (Groq Tool Use) - Recommended</option>
-                        <option value="mixtral-8x7b-32768">Mixtral 8x7b</option>
-                        <option value="llama3-groq-8b-8192-tool-use-preview">Llama 3 8B (Fast)</option>
-                        <option value="gemma-7b-it">Gemma 7B</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7b (Stable & Recommended)</option>
+                        <option value="gemma-7b-it">Gemma 7B (Fast)</option>
                     </select>
                 </div>
             </div>
@@ -456,8 +454,8 @@
             blogid: "27642592627975591",
             groqkey: "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",
             pexelskey: "zktXZfZyxDvRiAHbfd2fTR0cioV6pRyNSLRacwfUU13gWVXl7ZVI73kB",
-            // UPDATED TO STABLE TOOL USE MODEL
-            model: "llama3-groq-70b-8192-tool-use-preview"
+            // STABLE MODEL: Mixtral
+            model: "mixtral-8x7b-32768"
         };
 
         const APP = {
@@ -476,12 +474,20 @@
                 APP.config = DEFAULT_CONFIG;
             } else {
                 APP.config = JSON.parse(saved);
-                // MIGRATION LOGIC: Update old deprecated models to the new stable one
-                if(APP.config.model === "llama3-70b-8192" || APP.config.model === "llama-3.1-70b-versatile") {
-                    APP.config.model = "llama3-groq-70b-8192-tool-use-preview";
+                
+                // AUTO-MIGRATION: Force update any deprecated models to Mixtral
+                const deprecatedModels = [
+                    "llama3-70b-8192", 
+                    "llama-3.1-70b-versatile", 
+                    "llama3-groq-70b-8192-tool-use-preview"
+                ];
+
+                if (deprecatedModels.includes(APP.config.model)) {
+                    console.log("Migrating from deprecated model to Mixtral...");
+                    APP.config.model = "mixtral-8x7b-32768";
                     localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
-                    console.log("Migrated to stable Groq model ID");
                 }
+
                 if(!APP.config.groqkey) APP.config.groqkey = DEFAULT_CONFIG.groqkey;
                 if(!APP.config.clientid || APP.config.clientid !== DEFAULT_CONFIG.clientid) {
                     APP.config.clientid = DEFAULT_CONFIG.clientid;
@@ -506,7 +512,7 @@
                  document.getElementById(id).value = val;
              });
 
-             document.getElementById('cfgModel').value = APP.config.model || "llama3-groq-70b-8192-tool-use-preview";
+             document.getElementById('cfgModel').value = APP.config.model || "mixtral-8x7b-32768";
 
             initAuth();
             loadHistory();
@@ -518,7 +524,7 @@
             });
 
             checkSetup();
-            log("System ready. Groq Engine loaded.", "success");
+            log("System ready. Mixtral Engine loaded.", "success");
         });
 
         function checkSetup() {
@@ -530,7 +536,7 @@
             APP.config.blogid = document.getElementById('setupBlogId').value;
             APP.config.groqkey = document.getElementById('setupGroqKey').value;
             APP.config.pexelskey = document.getElementById('setupPexelsKey').value;
-            APP.config.model = "llama3-groq-70b-8192-tool-use-preview";
+            APP.config.model = "mixtral-8x7b-32768";
             
             if(!APP.config.clientid) return alert("Google Client ID is required.");
             localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
@@ -596,8 +602,8 @@
                             { role: "system", content: "You are an expert blog content writer. You output valid JSON only." },
                             { role: "user", content: prompt }
                         ],
-                        // Use the configured model
-                        model: APP.config.model || "llama3-groq-70b-8192-tool-use-preview",
+                        // Force Mixtral for stability
+                        model: APP.config.model || "mixtral-8x7b-32768",
                         temperature: 0.7,
                         response_format: { type: "json_object" }
                     })

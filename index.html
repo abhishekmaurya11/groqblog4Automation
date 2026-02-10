@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoBlogger Pro - Light Edition (Fixed Model)</title>
+    <title>AutoBlogger Pro - Stable Model Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <!-- Google API Client for Blogger -->
@@ -432,12 +432,12 @@
                 </div>
                 <div class="form-group">
                     <label>Default Groq Model</label>
-                    <!-- UPDATED MODELS HERE -->
+                    <!-- UPDATED STABLE MODELS -->
                     <select id="cfgModel">
-                        <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile (Recommended)</option>
-                        <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (Fast)</option>
+                        <option value="llama3-groq-70b-8192-tool-use-preview">Llama 3 70B (Groq Tool Use) - Recommended</option>
                         <option value="mixtral-8x7b-32768">Mixtral 8x7b</option>
-                        <option value="gemma2-9b-it">Gemma 2 9B</option>
+                        <option value="llama3-groq-8b-8192-tool-use-preview">Llama 3 8B (Fast)</option>
+                        <option value="gemma-7b-it">Gemma 7B</option>
                     </select>
                 </div>
             </div>
@@ -456,8 +456,8 @@
             blogid: "27642592627975591",
             groqkey: "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",
             pexelskey: "zktXZfZyxDvRiAHbfd2fTR0cioV6pRyNSLRacwfUU13gWVXl7ZVI73kB",
-            // FIXED MODEL ID
-            model: "llama-3.1-70b-versatile"
+            // UPDATED TO STABLE TOOL USE MODEL
+            model: "llama3-groq-70b-8192-tool-use-preview"
         };
 
         const APP = {
@@ -476,10 +476,11 @@
                 APP.config = DEFAULT_CONFIG;
             } else {
                 APP.config = JSON.parse(saved);
-                // Force update to new model if old one exists
-                if(APP.config.model === "llama3-70b-8192") {
-                    APP.config.model = "llama-3.1-70b-versatile";
+                // MIGRATION LOGIC: Update old deprecated models to the new stable one
+                if(APP.config.model === "llama3-70b-8192" || APP.config.model === "llama-3.1-70b-versatile") {
+                    APP.config.model = "llama3-groq-70b-8192-tool-use-preview";
                     localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
+                    console.log("Migrated to stable Groq model ID");
                 }
                 if(!APP.config.groqkey) APP.config.groqkey = DEFAULT_CONFIG.groqkey;
                 if(!APP.config.clientid || APP.config.clientid !== DEFAULT_CONFIG.clientid) {
@@ -490,8 +491,6 @@
             // Populate Inputs
             ['setupClientId','setupBlogId','setupGroqKey','setupPexelsKey',
              'cfgBlogId','cfgClientId','cfgGroqKey','cfgPexelsKey'].forEach(id => {
-                 const key = id.replace('cfg','').replace('setup','').toLowerCase();
-                 // simple mapping fix for IDs
                  let val = "";
                  if(id.includes('setup')) {
                      if(id === 'setupClientId') val = APP.config.clientid || "";
@@ -507,7 +506,7 @@
                  document.getElementById(id).value = val;
              });
 
-             document.getElementById('cfgModel').value = APP.config.model || "llama-3.1-70b-versatile";
+             document.getElementById('cfgModel').value = APP.config.model || "llama3-groq-70b-8192-tool-use-preview";
 
             initAuth();
             loadHistory();
@@ -531,7 +530,7 @@
             APP.config.blogid = document.getElementById('setupBlogId').value;
             APP.config.groqkey = document.getElementById('setupGroqKey').value;
             APP.config.pexelskey = document.getElementById('setupPexelsKey').value;
-            APP.config.model = "llama-3.1-70b-versatile";
+            APP.config.model = "llama3-groq-70b-8192-tool-use-preview";
             
             if(!APP.config.clientid) return alert("Google Client ID is required.");
             localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
@@ -597,7 +596,8 @@
                             { role: "system", content: "You are an expert blog content writer. You output valid JSON only." },
                             { role: "user", content: prompt }
                         ],
-                        model: APP.config.model || "llama-3.1-70b-versatile",
+                        // Use the configured model
+                        model: APP.config.model || "llama3-groq-70b-8192-tool-use-preview",
                         temperature: 0.7,
                         response_format: { type: "json_object" }
                     })

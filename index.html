@@ -457,7 +457,7 @@
             groqkey: "",
             pexelskey: "",
             // Default to an actively supported Groq model
-            model: "llama-3.1-8b-instant"
+            model: "llama-3.3-70b-versatile"
         };
 
         const APP = {
@@ -487,8 +487,8 @@
                 ];
 
                 if (deprecatedModels.includes(APP.config.model)) {
-                    console.log("Migrating from deprecated model to llama-3.1-8b-instant...");
-                    APP.config.model = "llama-3.1-8b-instant";
+                    console.log("Migrating from deprecated model to llama-3.3-70b-versatile...");
+                    APP.config.model = "llama-3.3-70b-versatile";
                     localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
                 }
 
@@ -517,7 +517,7 @@
                  document.getElementById(id).value = val;
              });
 
-             document.getElementById('cfgModel').value = APP.config.model || "llama-3.1-8b-instant";
+             document.getElementById('cfgModel').value = APP.config.model || "llama-3.3-70b-versatile";
 
             initAuth();
             loadHistory();
@@ -529,7 +529,7 @@
             });
 
             checkSetup();
-            log(`System ready. ${APP.config.model || "llama-3.1-8b-instant"} engine loaded.`, "success");
+            log(`System ready. ${APP.config.model || "llama-3.3-70b-versatile"} engine loaded.`, "success");
         });
 
         function checkSetup() {
@@ -606,7 +606,7 @@
             tokenClient.requestAccessToken({prompt: ''});
         };
 
-        const MODEL_FALLBACKS = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "gemma2-9b-it"];
+        const MODEL_FALLBACKS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it"];
 
         async function generateAI(topic, template, tone) {
             APP.config.groqkey = normalizeApiKey(APP.config.groqkey);

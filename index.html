@@ -453,8 +453,8 @@
         const DEFAULT_CONFIG = {
             clientid: "699259843998-qg5t2emtfubf2gpj7hbfrdgbi3lqocl5.apps.googleusercontent.com", 
             blogid: "27642592627975591",
-            groqkey: "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",
-            pexelskey: "zktXZfZyxDvRiAHbfd2fTR0cioV6pRyNSLRacwfUU13gWVXl7ZVI73kB",
+            groqkey: "",
+            pexelskey: "",
             // Default to an actively supported Groq model
             model: "llama-3.1-8b-instant"
         };
@@ -491,8 +491,7 @@
                     localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
                 }
 
-                if(!APP.config.groqkey) APP.config.groqkey = DEFAULT_CONFIG.groqkey;
-                if(!APP.config.clientid || APP.config.clientid !== DEFAULT_CONFIG.clientid) {
+                if(!APP.config.clientid) {
                     APP.config.clientid = DEFAULT_CONFIG.clientid;
                 }
             }
@@ -531,20 +530,43 @@
         });
 
         function checkSetup() {
-            if (!APP.config.clientid) document.getElementById('setupModal').style.display = 'flex';
+            if (!APP.config.clientid || !APP.config.groqkey) document.getElementById('setupModal').style.display = 'flex';
+        }
+
+        function normalizeApiKey(value) {
+            return (value || "").trim();
         }
 
         window.finishSetup = () => {
-            APP.config.clientid = document.getElementById('setupClientId').value;
-            APP.config.blogid = document.getElementById('setupBlogId').value;
-            APP.config.groqkey = document.getElementById('setupGroqKey').value;
-            APP.config.pexelskey = document.getElementById('setupPexelsKey').value;
+            APP.config.clientid = document.getElementById('setupClientId').value.trim();
+            APP.config.blogid = document.getElementById('setupBlogId').value.trim();
+            APP.config.groqkey = normalizeApiKey(document.getElementById('setupGroqKey').value);
+            APP.config.pexelskey = normalizeApiKey(document.getElementById('setupPexelsKey').value);
             APP.config.model = "llama-3.1-8b-instant";
             
             if(!APP.config.clientid) return alert("Google Client ID is required.");
+            if(!APP.config.groqkey) return alert("Groq API Key is required.");
             localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
             document.getElementById('setupModal').style.display = 'none';
             log("Configuration Saved.", "success");
+        };
+
+        window.saveSettings = () => {
+            APP.config.clientid = document.getElementById('cfgClientId').value.trim();
+            APP.config.blogid = document.getElementById('cfgBlogId').value.trim();
+            APP.config.groqkey = normalizeApiKey(document.getElementById('cfgGroqKey').value);
+            APP.config.pexelskey = normalizeApiKey(document.getElementById('cfgPexelsKey').value);
+            APP.config.model = document.getElementById('cfgModel').value || "llama-3.1-8b-instant";
+
+            if (!APP.config.clientid) return alert("Google Client ID is required.");
+            if (!APP.config.groqkey) return alert("Groq API Key is required.");
+
+            localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
+            document.getElementById('setupClientId').value = APP.config.clientid;
+            document.getElementById('setupBlogId').value = APP.config.blogid;
+            document.getElementById('setupGroqKey').value = APP.config.groqkey;
+            document.getElementById('setupPexelsKey').value = APP.config.pexelskey;
+            log("Settings saved successfully.", "success");
         };
 
         window.switchView = (viewId) => {
@@ -584,6 +606,7 @@
         const MODEL_FALLBACKS = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "gemma2-9b-it"];
 
         async function generateAI(topic, template, tone) {
+            APP.config.groqkey = normalizeApiKey(APP.config.groqkey);
             if (!APP.config.groqkey) throw new Error("Groq API Key missing");
 
             let prompt = "";
@@ -621,6 +644,10 @@
                     if (!response.ok) {
                         const err = await response.json().catch(() => ({}));
                         const message = err.error?.message || `Groq API Error (${response.status})`;
+                        const isAuthIssue = response.status === 401 || /invalid api key|unauthorized|authentication/i.test(message);
+                        if (isAuthIssue) {
+                            throw new Error("Invalid Groq API Key. Update it in Settings and try again.");
+                        }
                         const isModelIssue = /decommissioned|no longer supported|model.*not found|not supported/i.test(message);
                         if (isModelIssue) {
                             lastError = new Error(message);
@@ -790,12 +817,17 @@
             const tone = document.getElementById('singleTone').value;
             const delay = parseInt(document.getElementById('batchDelay').value) * 1000;
             const useImages = document.getElementById('batchImages').checked;
-            log(`Starting batch processing of ${APP.queue.length} items...`, "info");
-            for (let i = 0; i < APP.queue.length; i++) {
-                if (APP.stopSignal) { log("Process stopped by user.", "warning"); break; }
-                const topic = APP.queue[i];
+            const totalItems = APP.queue.length;
+            let processedItems = 0;
+
+            log(`Starting batch processing of ${totalItems} items...`, "info");
+
+            while (APP.queue.length > 0 && !APP.stopSignal) {
+                const topic = APP.queue[0];
+                processedItems += 1;
+
                 try {
-                    log(`[${i+1}/${APP.queue.length}] Generating: ${topic}...`, "info");
+                    log(`[${processedItems}/${totalItems}] Generating: ${topic}...`, "info");
                     const data = await generateAI(topic, template, tone);
                     let body = data.body;
                     if (useImages) {
@@ -812,15 +844,26 @@
                 } catch (e) {
                     log(`FAILED: ${topic} - ${e.message}`, "error");
                     addToHistory(topic, "Error", new Date());
+                    if (/Invalid Groq API Key/i.test(e.message)) {
+                        log("Stopping batch: fix Groq API key in Settings before retrying.", "warning");
+                        APP.stopSignal = true;
+                    }
                 }
+
                 APP.queue.shift();
                 renderQueue();
                 updateStats();
-                if (i < APP.queue.length && !APP.stopSignal) {
+
+                if (APP.queue.length > 0 && !APP.stopSignal) {
                     log(`Waiting ${delay/1000}s...`, "info");
                     await new Promise(r => setTimeout(r, delay));
                 }
             }
+
+            if (APP.stopSignal) {
+                log("Process stopped by user.", "warning");
+            }
+
             APP.isLooping = false;
             document.getElementById('startBatchBtn').classList.remove('hidden');
             document.getElementById('stopBatchBtn').classList.add('hidden');

@@ -493,6 +493,7 @@
 
                 // Preserve user-configured OAuth client IDs; only backfill when missing.
                 if (!APP.config.clientid) {
+                if(!APP.config.clientid || APP.config.clientid !== DEFAULT_CONFIG.clientid) {
                     APP.config.clientid = DEFAULT_CONFIG.clientid;
                     localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
                 }

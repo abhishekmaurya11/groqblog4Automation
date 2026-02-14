@@ -491,8 +491,11 @@
                     localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
                 }
 
+                // Preserve user-configured OAuth client IDs; only backfill when missing.
+                if (!APP.config.clientid) {
                 if(!APP.config.clientid || APP.config.clientid !== DEFAULT_CONFIG.clientid) {
                     APP.config.clientid = DEFAULT_CONFIG.clientid;
+                    localStorage.setItem('autoBloggerProConfig', JSON.stringify(APP.config));
                 }
             }
 
@@ -817,12 +820,17 @@
             const tone = document.getElementById('singleTone').value;
             const delay = parseInt(document.getElementById('batchDelay').value) * 1000;
             const useImages = document.getElementById('batchImages').checked;
-            log(`Starting batch processing of ${APP.queue.length} items...`, "info");
-            for (let i = 0; i < APP.queue.length; i++) {
-                if (APP.stopSignal) { log("Process stopped by user.", "warning"); break; }
-                const topic = APP.queue[i];
+            const totalItems = APP.queue.length;
+            let processedItems = 0;
+
+            log(`Starting batch processing of ${totalItems} items...`, "info");
+
+            while (APP.queue.length > 0 && !APP.stopSignal) {
+                const topic = APP.queue[0];
+                processedItems += 1;
+
                 try {
-                    log(`[${i+1}/${APP.queue.length}] Generating: ${topic}...`, "info");
+                    log(`[${processedItems}/${totalItems}] Generating: ${topic}...`, "info");
                     const data = await generateAI(topic, template, tone);
                     let body = data.body;
                     if (useImages) {
@@ -844,14 +852,21 @@
                         APP.stopSignal = true;
                     }
                 }
+
                 APP.queue.shift();
                 renderQueue();
                 updateStats();
-                if (i < APP.queue.length && !APP.stopSignal) {
+
+                if (APP.queue.length > 0 && !APP.stopSignal) {
                     log(`Waiting ${delay/1000}s...`, "info");
                     await new Promise(r => setTimeout(r, delay));
                 }
             }
+
+            if (APP.stopSignal) {
+                log("Process stopped by user.", "warning");
+            }
+
             APP.isLooping = false;
             document.getElementById('startBatchBtn').classList.remove('hidden');
             document.getElementById('stopBatchBtn').classList.add('hidden');
